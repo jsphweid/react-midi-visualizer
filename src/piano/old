@@ -1,0 +1,144 @@
+import * as React from 'react'
+import { Layer, Rect, Stage } from 'react-konva'
+
+export interface PianoProps {
+	noteRange: number[]
+	x: number
+	y: number
+	keyWidth: number
+}
+
+export interface PianoState {
+	keyOffsetPercentsTruth: any[]
+	inputBoxes: any[]
+	lol0: any
+	lol1: any
+	lol2: any
+	lol3: any
+	lol4: any
+	lol5: any
+	lol6: any
+	lol7: any
+	lol8: any
+	lol9: any
+	lol10: any
+	lol11: any
+}
+
+const whiteWidthToBlackRatio = 1.75
+
+export default class Piano extends React.Component<PianoProps, any> {
+	public static isBlackPattern: number[] = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0]
+	public static keyOffsetPercentsOriginal: number[] = [0, 0, -0.36, 0, -0.68, 0, 0, -0.26, 0, -0.5, 0, -0.75]
+	constructor(props: PianoProps) {
+		super(props)
+		this.state = {
+			keyOffsetPercentsTruth: Piano.keyOffsetPercentsOriginal,
+			lol0: Piano.keyOffsetPercentsOriginal[0],
+			lol1: Piano.keyOffsetPercentsOriginal[1],
+			lol2: Piano.keyOffsetPercentsOriginal[2],
+			lol3: Piano.keyOffsetPercentsOriginal[3],
+			lol4: Piano.keyOffsetPercentsOriginal[4],
+			lol5: Piano.keyOffsetPercentsOriginal[5],
+			lol6: Piano.keyOffsetPercentsOriginal[6],
+			lol7: Piano.keyOffsetPercentsOriginal[7],
+			lol8: Piano.keyOffsetPercentsOriginal[8],
+			lol9: Piano.keyOffsetPercentsOriginal[9],
+			lol10: Piano.keyOffsetPercentsOriginal[10],
+			lol11: Piano.keyOffsetPercentsOriginal[11]
+		}
+	}
+
+	componentDidUpdate(prevProps: any, prevState: any) {
+		console.log('prevState, ', prevState.thingToFocus)
+		// if (prevState.thingToFocus) {
+		// 	console.log('hi', prevState.thingToFocus)
+		// 	prevState.thingToFocus.focus()
+		// 	this.setState({ thingToFocus: null })
+		// }
+	}
+
+	private makeWhiteKey(x: number, y: number): JSX.Element {
+		return (
+			<Rect
+				key={`white${x}-${y}`}
+				x={x}
+				y={y}
+				width={this.props.keyWidth * whiteWidthToBlackRatio}
+				height={500}
+				fill={'white'}
+				shadowBlur={5}
+			/>
+		)
+	}
+
+	private makeBlackKey(x: number, y: number): JSX.Element {
+		return (
+			<Rect
+				key={`black${x}-${y}`}
+				x={x}
+				y={y}
+				width={this.props.keyWidth}
+				height={330}
+				fill={'black'}
+				shadowBlur={5}
+			/>
+		)
+	}
+
+	private noteRangeIsValid() {
+		const { noteRange } = this.props
+		return noteRange && noteRange.length === 2 && noteRange[0] < noteRange[1]
+	}
+
+	private handleSave() {
+		const stateToUpdate: any = {}
+		const newArr: number[] = []
+		Piano.keyOffsetPercentsOriginal.forEach((val, index) => {
+			const key = `lol${index}` as any
+			const newNum = parseFloat(this.state[key]) || val
+			stateToUpdate[key] = newNum
+			newArr.push(newNum)
+		})
+		stateToUpdate.keyOffsetPercentsTruth = newArr
+		this.setState(stateToUpdate)
+	}
+
+	public render() {
+		if (!this.noteRangeIsValid()) throw new Error('Note range is not valid...')
+		const { noteRange, x, y, keyWidth } = this.props
+		let currentX = x
+		const pianoKeys: JSX.Element[] = []
+		for (let i = noteRange[0]; i <= noteRange[1]; i++, currentX += keyWidth) {
+			const noteIndex = i % 12
+			const noteIsBlack = !!Piano.isBlackPattern[noteIndex]
+			if (noteIsBlack) {
+				pianoKeys.push(this.makeBlackKey(currentX, y))
+			} else {
+				const offset = keyWidth * this.state.keyOffsetPercentsTruth[noteIndex]
+				pianoKeys.unshift(this.makeWhiteKey(currentX + offset, y))
+			}
+		}
+		return (
+			<div>
+				<input value={this.state.lol0} onChange={e => this.setState({ lol0: e.target.value })} />
+				<input value={this.state.lol1} onChange={e => this.setState({ lol1: e.target.value })} />
+				<input value={this.state.lol2} onChange={e => this.setState({ lol2: e.target.value })} />
+				<input value={this.state.lol3} onChange={e => this.setState({ lol3: e.target.value })} />
+				<input value={this.state.lol4} onChange={e => this.setState({ lol4: e.target.value })} />
+				<input value={this.state.lol5} onChange={e => this.setState({ lol5: e.target.value })} />
+				<input value={this.state.lol6} onChange={e => this.setState({ lol6: e.target.value })} />
+				<input value={this.state.lol7} onChange={e => this.setState({ lol7: e.target.value })} />
+				<input value={this.state.lol8} onChange={e => this.setState({ lol8: e.target.value })} />
+				<input value={this.state.lol9} onChange={e => this.setState({ lol9: e.target.value })} />
+				<input value={this.state.lol10} onChange={e => this.setState({ lol10: e.target.value })} />
+				<input value={this.state.lol11} onChange={e => this.setState({ lol11: e.target.value })} />
+				<button onClick={this.handleSave.bind(this)}>save</button>
+				{JSON.stringify(this.state.keyOffsetPercentsTruth)}
+				<Stage width={window.innerWidth} height={window.innerHeight}>
+					<Layer>{pianoKeys}</Layer>
+				</Stage>
+			</div>
+		)
+	}
+}

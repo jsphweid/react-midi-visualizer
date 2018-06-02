@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
 	devtool: 'source-map',
 	entry: {
-		client: ['./src/develop']
+		client: ['./src/develop', './src/react-midi-visualizer.scss']
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),

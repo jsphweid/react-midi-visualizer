@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import sampleMidiJson from './sample'
+import data from './sample'
 import ReactMidiVisualizer from './react-midi-visualizer'
 
 const BPM = 120
@@ -12,7 +12,13 @@ let alreadyStarted = false
 
 function render(startTime = 0) {
 	ReactDOM.render(
-		<ReactMidiVisualizer audioContext={audioContext} height={500} width={500} midiJson={sampleMidiJson} />,
+		<ReactMidiVisualizer
+			audioContext={audioContext}
+			height={500}
+			width={500}
+			startTime={startTime}
+			notes={data[0].midiJson.tracks[0].notes}
+		/>,
 		document.getElementById('app')
 	)
 }
@@ -29,7 +35,7 @@ function render(startTime = 0) {
 // 	}
 // }
 
-function start() {
+function startRecording() {
 	startTime = audioContext.currentTime
 	if (alreadyStarted) {
 		restartAudioContext()
@@ -47,4 +53,4 @@ async function restartAudioContext() {
 
 render()
 
-ReactDOM.render(<button onClick={start.bind(this)}>Start</button>, document.getElementById('btn'))
+ReactDOM.render(<button onClick={startRecording.bind(this)}>Start</button>, document.getElementById('btn'))
