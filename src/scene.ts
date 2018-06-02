@@ -2,6 +2,7 @@ import { ReactMidiVisualizerProps } from './react-midi-visualizer'
 import Piano from './piano/piano'
 import { determineLowestHighestC } from './common/helpers'
 import { white } from './common/constants'
+
 export default class Scene {
 	ctx: CanvasRenderingContext2D
 	width: number
@@ -14,12 +15,13 @@ export default class Scene {
 		this.height = props.height
 
 		const { lowestC, highestC } = determineLowestHighestC(props.notes.map(note => note.midi))
-		this.piano = new Piano(_ctx, 10, 10, [lowestC, highestC])
+		const eventAndKeyWidth = 40
+		this.piano = new Piano(_ctx, this.width, this.height, [lowestC, highestC], eventAndKeyWidth, props)
 	}
 
 	public drawFrame = (time: number) => {
 		this.drawClearRect()
-		this.piano.draw()
+		this.piano.draw(time)
 	}
 
 	private drawClearRect = () => {

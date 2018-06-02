@@ -9,13 +9,13 @@ const allOscs: OscillatorNode[] = []
 let startTime = null
 
 let alreadyStarted = false
-
+console.log('---', data[0].midiJson.tracks[0].notes)
 function render(startTime = 0) {
 	ReactDOM.render(
 		<ReactMidiVisualizer
 			audioContext={audioContext}
 			height={500}
-			width={500}
+			width={800}
 			startTime={startTime}
 			notes={data[0].midiJson.tracks[0].notes}
 		/>,
