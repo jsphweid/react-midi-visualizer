@@ -53,8 +53,6 @@ export default class ReactMidiVisualizer extends React.Component<ReactMidiVisual
 		}, 1000 / this.props.options.fps)
 	}
 
-	// maybe you only need track?
-
 	public render() {
 		return (
 			<canvas

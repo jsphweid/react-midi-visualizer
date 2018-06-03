@@ -9,7 +9,7 @@ const allOscs: OscillatorNode[] = []
 let startTime = null
 
 let alreadyStarted = false
-console.log('---', data[0].midiJson.tracks[0].notes)
+
 function render(startTime = 0) {
 	ReactDOM.render(
 		<ReactMidiVisualizer
@@ -23,18 +23,6 @@ function render(startTime = 0) {
 	)
 }
 
-// function scheduleAllNotes(startTime: number) {
-// 	for (let i = 0; i < 10; i++) {
-// 		var osc = audioContext.createOscillator()
-// 		osc.connect(audioContext.destination)
-// 		osc.frequency.value = 440.0
-// 		const noteStartTime = i * getSecondsPerBeat(BPM) + startTime
-// 		osc.start(noteStartTime)
-// 		osc.stop(noteStartTime + NOTE_LENGTH)
-// 		allOscs.push(osc)
-// 	}
-// }
-
 function startRecording() {
 	startTime = audioContext.currentTime
 	if (alreadyStarted) {
@@ -42,7 +30,6 @@ function startRecording() {
 	}
 	alreadyStarted = true
 	render(startTime)
-	// scheduleAllNotes(startTime)
 }
 
 async function restartAudioContext() {
