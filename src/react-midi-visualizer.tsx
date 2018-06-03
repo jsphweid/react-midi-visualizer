@@ -17,7 +17,7 @@ export default class ReactMidiVisualizer extends React.Component<ReactMidiVisual
 	canvasContext: CanvasRenderingContext2D
 	scene: Scene
 
-	private static defaultProps: Partial<ReactMidiVisualizerProps> = {
+	public static defaultProps: Partial<ReactMidiVisualizerProps> = {
 		options: { fps: 60 }
 	}
 
@@ -26,15 +26,7 @@ export default class ReactMidiVisualizer extends React.Component<ReactMidiVisual
 	}
 
 	componentDidMount() {
-		const props = {
-			...this.props,
-			options: {
-				...ReactMidiVisualizer.defaultProps.options,
-				...this.props.options
-			}
-		}
-
-		this.scene = new Scene(this.canvasContext, props)
+		this.scene = new Scene(this.canvasContext, this.props)
 		window.requestAnimationFrame(this.animationStep.bind(this))
 	}
 

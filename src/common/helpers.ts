@@ -1,4 +1,6 @@
-export const determineLowestHighestC = (midiNotes: number[]): { lowestC: number; highestC: number } => {
+import { SegmentRangeType } from './types'
+
+export const determineLowestHighestC = (midiNotes: number[]): SegmentRangeType => {
 	const maxMidi = Math.max(...midiNotes)
 	const minMidi = Math.min(...midiNotes)
 	const allCs = Array(255)
@@ -6,7 +8,7 @@ export const determineLowestHighestC = (midiNotes: number[]): { lowestC: number;
 		.map((_, i) => i)
 		.filter(num => num % 12 === 0)
 	return {
-		lowestC: allCs.reverse().filter(num => num <= minMidi)[0],
-		highestC: allCs.reverse().filter(num => num >= maxMidi)[0]
+		lowestMidiNote: allCs.reverse().filter(num => num <= minMidi)[0],
+		highestMidiNote: allCs.reverse().filter(num => num >= maxMidi)[0]
 	}
 }

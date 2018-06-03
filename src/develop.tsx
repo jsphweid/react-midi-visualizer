@@ -18,6 +18,11 @@ function render(startTime = 0) {
 			width={800}
 			startTime={startTime}
 			notes={data[0].midiJson.tracks[0].notes}
+			options={{
+				fps: 60,
+				keyboardHeight: 200,
+				pixelsPerSecondFall: 200
+			}}
 		/>,
 		document.getElementById('app')
 	)
