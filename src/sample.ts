@@ -1,6 +1,6 @@
 import { MIDI } from 'midiconvert'
 
-interface SegmentType {
+export interface SegmentType {
 	midiJson: MIDI
 	centerTime: number
 	difficulty: number
