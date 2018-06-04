@@ -65,7 +65,6 @@ export default class Piano {
 	}
 
 	public draw(timeSinceStart: number): void {
-		// get depressed notes
 		this.drawEvents(timeSinceStart)
 
 		const depressedNotes = this.getcurrentDepressedNotes(timeSinceStart)
@@ -76,9 +75,9 @@ export default class Piano {
 		this.notes.forEach((note: Note) => {
 			const numPixelsToRight = (note.midi - this.range.lowestMidiNote) * this.keyWidth
 			const timeUntilNoteIsPlayed = note.time - timeSinceStart
-			const pixelsItMustTravel = this.topOfPianoY - timeUntilNoteIsPlayed * this.pixelsPerSecondFall
-			const height = note.duration * this.pixelsPerSecondFall
-			this.makeRect(numPixelsToRight, pixelsItMustTravel, this.keyWidth, height, black, grey)
+			const eventHeight = note.duration * this.pixelsPerSecondFall
+			const pixelsItMustTravel = this.topOfPianoY - timeUntilNoteIsPlayed * this.pixelsPerSecondFall - eventHeight
+			this.makeRect(numPixelsToRight, pixelsItMustTravel, this.keyWidth, eventHeight, black, grey)
 		})
 	}
 
