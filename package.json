@@ -1,6 +1,6 @@
 {
 	"name": "react-midi-visualizer",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "guitar-hero style visualizer that runs off of midi-json and an audio context",
 	"main": "dist/react-midi-visualizer.js",
 	"types": "dist/react-midi-visualizer.d.ts",
@@ -32,15 +32,25 @@
 	},
 	"jest": {
 		"setupFiles": [],
-		"moduleFileExtensions": ["ts", "js"],
+		"moduleFileExtensions": [
+			"ts",
+			"js"
+		],
 		"transform": {
 			"\\.(ts)$": "./node_modules/ts-jest/preprocessor.js"
 		},
 		"testRegex": "/src/.*\\.test.(ts|js)$"
 	},
 	"lint-staged": {
-		"*.scss": ["prettier --write", "git add"],
-		"*.{js,jsx,ts,tsx}": ["prettier --parser typescript --write", "tslint --fix --force", "git add"]
+		"*.scss": [
+			"prettier --write",
+			"git add"
+		],
+		"*.{js,jsx,ts,tsx}": [
+			"prettier --parser typescript --write",
+			"tslint --fix --force",
+			"git add"
+		]
 	},
 	"homepage": "https://github.com/jsphweid/react-midi-visualizer#readme",
 	"devDependencies": {
