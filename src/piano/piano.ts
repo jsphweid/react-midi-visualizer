@@ -19,21 +19,32 @@ export default class Piano {
 	private static whiteWidthToBlackRatio: number = 1.75
 	private static isBlackPattern: number[] = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0]
 	private static keyOffsetPercents: number[] = [0, 0, -0.36, 0, -0.68, 0, 0, -0.26, 0, -0.5, 0, -0.75]
+	private static lineThickness: number = 5
+	private static thicknessOffset: number = Piano.lineThickness / 2
 
 	constructor(_ctx: CanvasRenderingContext2D, props: ReactMidiVisualizerProps) {
 		this.ctx = _ctx
 
-		const { options, width, height, notes } = props
-		this.keyboardHeight = options.keyboardHeight || 0.25 * height
+		const { options, notes } = props
+		this.width = props.width - Piano.thicknessOffset * 2
+		this.height = props.height - Piano.thicknessOffset
+
+		this.keyboardHeight = options.keyboardHeight || 0.25 * this.height
 		this.range = determineLowestHighestC(notes.map(note => note.midi))
-		this.topOfPianoY = height - this.keyboardHeight
+		this.topOfPianoY = this.height - this.keyboardHeight
 		this.notes = notes
-		this.keyWidth = props.width / (this.range.highestMidiNote - this.range.lowestMidiNote + 1)
+		this.keyWidth = this.determineKeyWidth()
 		this.whiteKeyWidth = this.keyWidth * Piano.whiteWidthToBlackRatio
-		this.width = width
-		this.height = height
-		this.pixelsPerSecondFall = options.pixelsPerSecondFall || height - this.keyboardHeight
+		this.pixelsPerSecondFall = options.pixelsPerSecondFall || this.height - this.keyboardHeight
 		this.blackKeyHeight = this.keyboardHeight * 0.66
+	}
+
+	private determineKeyWidth(): number {
+		const numberOfNotesOnPiano = this.range.highestMidiNote - this.range.lowestMidiNote + 1
+		const highestNoteIsBlack: boolean = !!Piano.isBlackPattern[this.range.highestMidiNote % 12]
+		return highestNoteIsBlack
+			? this.width / numberOfNotesOnPiano
+			: this.width / (numberOfNotesOnPiano + Piano.whiteWidthToBlackRatio - 1)
 	}
 
 	private makeWhiteKey(note: NoteToDrawType): void {
@@ -50,7 +61,7 @@ export default class Piano {
 
 	private makeRect(x: number, y: number, width: number, height: number, border: string, fill: string): void {
 		this.ctx.beginPath()
-		this.ctx.lineWidth = 3
+		this.ctx.lineWidth = Piano.lineThickness
 		this.ctx.strokeStyle = border
 		this.ctx.fillStyle = fill
 		this.ctx.rect(x, y, width, height)
@@ -72,8 +83,9 @@ export default class Piano {
 	}
 
 	private drawEvents(timeSinceStart: number): void {
+		const offset = Piano.thicknessOffset
 		this.notes.forEach((note: Note) => {
-			const numPixelsToRight = (note.midi - this.range.lowestMidiNote) * this.keyWidth
+			const numPixelsToRight = (note.midi - this.range.lowestMidiNote) * this.keyWidth + offset
 			const timeUntilNoteIsPlayed = note.time - timeSinceStart
 			const eventHeight = note.duration * this.pixelsPerSecondFall
 			const pixelsItMustTravel = this.topOfPianoY - timeUntilNoteIsPlayed * this.pixelsPerSecondFall - eventHeight
@@ -82,7 +94,7 @@ export default class Piano {
 	}
 
 	private drawPiano(depressedNotes: number[]): void {
-		let currentX = 0
+		let currentX = Piano.thicknessOffset
 		const blackNotes: NoteToDrawType[] = []
 		const whiteNotes: NoteToDrawType[] = []
 		for (let i = this.range.lowestMidiNote; i <= this.range.highestMidiNote; i++, currentX += this.keyWidth) {
