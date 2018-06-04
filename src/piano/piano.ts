@@ -1,88 +1,103 @@
-import { black } from '../common/constants'
+import { black, white, grey } from '../common/constants'
 import { Note } from 'midiconvert'
-import { ReactMidiVisualizerProps } from '../react-midi-visualizer'
+import ReactMidiVisualizer, { ReactMidiVisualizerProps } from '../react-midi-visualizer'
+import { determineLowestHighestC } from '../common/helpers'
+import { SegmentRangeType, PointType, NoteToDrawType } from '../common/types'
 export default class Piano {
 	private ctx: CanvasRenderingContext2D
 	private width: number
 	private height: number
-	private noteRange: number[]
+	private range: SegmentRangeType
 	private keyWidth: number
+	private topOfPianoY: number
 	private whiteKeyWidth: number
-	private props: ReactMidiVisualizerProps
+	private keyboardHeight: number
+	private blackKeyHeight: number
+	private pixelsPerSecondFall: number
+	private notes: Note[]
 
 	private static whiteWidthToBlackRatio: number = 1.75
 	private static isBlackPattern: number[] = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0]
 	private static keyOffsetPercents: number[] = [0, 0, -0.36, 0, -0.68, 0, 0, -0.26, 0, -0.5, 0, -0.75]
-	private static whiteKeyHeight: number = 300
-	private static blackKeyHeight: number = 200
 
-	private static pixelsPerSecond: number = 200
-
-	constructor(
-		_ctx: CanvasRenderingContext2D,
-		_width: number,
-		_height: number,
-		_noteRange: number[],
-		eventAndKeyWidth: number,
-		props: ReactMidiVisualizerProps
-	) {
+	constructor(_ctx: CanvasRenderingContext2D, props: ReactMidiVisualizerProps) {
 		this.ctx = _ctx
-		this.width = _width
-		this.height = _height
-		this.noteRange = _noteRange
-		this.keyWidth = eventAndKeyWidth
+
+		const { options, width, height, notes } = props
+		this.keyboardHeight = options.keyboardHeight || 0.25 * height
+		this.range = determineLowestHighestC(notes.map(note => note.midi))
+		this.topOfPianoY = height - this.keyboardHeight
+		this.notes = notes
+		this.keyWidth = props.width / (this.range.highestMidiNote - this.range.lowestMidiNote + 1)
 		this.whiteKeyWidth = this.keyWidth * Piano.whiteWidthToBlackRatio
-		this.props = props
+		this.width = width
+		this.height = height
+		this.pixelsPerSecondFall = options.pixelsPerSecondFall || height - this.keyboardHeight
+		this.blackKeyHeight = this.keyboardHeight * 0.66
 	}
 
-	private makeWhiteKey(x: number, y: number): void {
-		this.ctx.beginPath()
-		this.ctx.lineWidth = 5
-		this.ctx.strokeStyle = 'black'
-		this.ctx.rect(x, y, this.whiteKeyWidth, Piano.whiteKeyHeight)
-		this.ctx.stroke()
+	private makeWhiteKey(note: NoteToDrawType): void {
+		const { x, y } = note.point
+		const fillColor = note.depressed ? grey : white
+		this.makeRect(x, y, this.whiteKeyWidth, this.keyboardHeight, black, fillColor)
 	}
 
-	private makeBlackKey(x: number, y: number): void {
-		this.ctx.fillStyle = black
-		this.ctx.fillRect(x, y, this.keyWidth, Piano.blackKeyHeight)
+	private makeBlackKey(note: NoteToDrawType): void {
+		const { x, y } = note.point
+		const fillColor = note.depressed ? grey : black
+		this.makeRect(x, y, this.keyWidth, this.blackKeyHeight, black, fillColor)
 	}
 
-	private makeRect(x: number, y: number, width: number, height: number): void {
+	private makeRect(x: number, y: number, width: number, height: number, border: string, fill: string): void {
 		this.ctx.beginPath()
 		this.ctx.lineWidth = 3
-		this.ctx.strokeStyle = 'black'
+		this.ctx.strokeStyle = border
+		this.ctx.fillStyle = fill
 		this.ctx.rect(x, y, width, height)
 		this.ctx.stroke()
+		this.ctx.fill()
+	}
+
+	private getcurrentDepressedNotes(clockTime: number): number[] {
+		return this.notes
+			.filter(({ time, duration }) => clockTime >= time && clockTime < time + duration)
+			.map(note => note.midi)
 	}
 
 	public draw(timeSinceStart: number): void {
-		const dropDistance = 400
-		this.drawEvents(timeSinceStart, dropDistance)
-		this.drawPiano(dropDistance)
+		// get depressed notes
+		this.drawEvents(timeSinceStart)
+
+		const depressedNotes = this.getcurrentDepressedNotes(timeSinceStart)
+		this.drawPiano(depressedNotes)
 	}
 
-	private drawEvents(timeSinceStart: number, dropDistance: number): void {
-		this.props.notes.forEach((note: Note) => {
-			const numPixelsToRight = (note.midi - this.noteRange[0]) * this.keyWidth
+	private drawEvents(timeSinceStart: number): void {
+		this.notes.forEach((note: Note) => {
+			const numPixelsToRight = (note.midi - this.range.lowestMidiNote) * this.keyWidth
 			const timeUntilNoteIsPlayed = note.time - timeSinceStart
-			const pixelsItMustTravel = dropDistance - timeUntilNoteIsPlayed * Piano.pixelsPerSecond
-			const height = note.duration * Piano.pixelsPerSecond
-			this.makeRect(numPixelsToRight, pixelsItMustTravel, this.keyWidth, height)
+			const pixelsItMustTravel = this.topOfPianoY - timeUntilNoteIsPlayed * this.pixelsPerSecondFall
+			const height = note.duration * this.pixelsPerSecondFall
+			this.makeRect(numPixelsToRight, pixelsItMustTravel, this.keyWidth, height, black, grey)
 		})
 	}
 
-	private drawPiano(dropDistance: number): void {
+	private drawPiano(depressedNotes: number[]): void {
 		let currentX = 0
-		for (let i = this.noteRange[0]; i <= this.noteRange[1]; i++, currentX += this.keyWidth) {
+		const blackNotes: NoteToDrawType[] = []
+		const whiteNotes: NoteToDrawType[] = []
+		for (let i = this.range.lowestMidiNote; i <= this.range.highestMidiNote; i++, currentX += this.keyWidth) {
 			const noteIndex = i % 12
 			const noteIsBlack = !!Piano.isBlackPattern[noteIndex]
+			const depressed = depressedNotes.indexOf(i) !== -1
 			if (noteIsBlack) {
-				this.makeBlackKey(currentX, dropDistance)
+				blackNotes.push({ depressed, point: { x: currentX, y: this.topOfPianoY } })
 			} else {
 				const offset = this.keyWidth * Piano.keyOffsetPercents[noteIndex]
-				this.makeWhiteKey(currentX + offset, dropDistance)
+				whiteNotes.push({ depressed, point: { x: currentX + offset, y: this.topOfPianoY } })
 			}
 		}
+		whiteNotes.forEach(note => this.makeWhiteKey(note))
+		blackNotes.forEach(note => this.makeBlackKey(note))
 	}
 }
