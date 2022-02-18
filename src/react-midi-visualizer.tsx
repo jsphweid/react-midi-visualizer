@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Note } from "midiconvert";
 
-import { ReactMidiVisualizerOptionsType } from "./types";
+import { Note, ReactMidiVisualizerOptionsType } from "./types";
 import Scene from "./scene";
 
 export interface ReactMidiVisualizerProps {

@@ -18,3 +18,11 @@ export interface NoteToDrawType {
   point: PointType;
   depressed: boolean;
 }
+
+export interface Note {
+  name: string;
+  midi: number;
+  time: number;
+  velocity: number;
+  duration: number;
+}
