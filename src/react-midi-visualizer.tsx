@@ -27,8 +27,18 @@ export default class ReactMidiVisualizer extends React.Component<
   }
 
   componentDidMount() {
-    this.scene = new Scene(this.canvasContext, this.props);
+    this.remakeScene();
     window.requestAnimationFrame(this.animationStep.bind(this));
+  }
+
+  componentDidUpdate(prevProps: ReactMidiVisualizerProps) {
+    if (prevProps.notes !== this.props.notes) {
+      this.remakeScene();
+    }
+  }
+
+  private remakeScene() {
+    this.scene = new Scene(this.canvasContext, this.props);
   }
 
   private setCanvasContext = (canvas: HTMLCanvasElement): void => {
