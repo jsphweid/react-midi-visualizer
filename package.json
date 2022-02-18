@@ -14,7 +14,7 @@
     "dev": "parcel serve src/index.html --port 1234",
     "build": "npm run clean && tsc",
     "precommit": "lint-staged",
-    "prepare": "npm run build",
+    "prepublishOnly": "npm run build",
     "release:alpha": "npm run test && npm version prerelease && npm publish --tag=alpha",
     "release:major": "npm run test && npm version major && npm publish",
     "release:minor": "npm run test && npm version minor && npm publish",
