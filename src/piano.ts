@@ -1,9 +1,7 @@
-import { Note } from "midiconvert";
-
 import { black, white, grey } from "./constants";
 import { ReactMidiVisualizerProps } from "./react-midi-visualizer";
 import { determineLowestHighestC } from "./helpers";
-import { SegmentRangeType, NoteToDrawType } from "./types";
+import { SegmentRangeType, NoteToDrawType, Note } from "./types";
 
 export default class Piano {
   private ctx: CanvasRenderingContext2D;
