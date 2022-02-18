@@ -1,13 +1,3 @@
-import { MIDI } from "midiconvert";
-
-export interface SegmentType {
-  midiJson: MIDI;
-  centerTime: number;
-  difficulty: number;
-  midiName: string;
-  offset: number;
-}
-
 export const sample1 = [
   {
     name: "B4",
