@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import data from "./sample";
+import { sample1, sample2 } from "./sample";
 import ReactMidiVisualizer from "./react-midi-visualizer";
 
 function App() {
   const [ac, setAc] = React.useState<AudioContext | null>(null);
   const [startTime, setStartTime] = React.useState<number | null>(null);
+  const [notes, setNotes] = React.useState(sample1);
 
   function startAudioContext() {
     const audioContext = new AudioContext();
@@ -19,6 +20,10 @@ function App() {
     }
   }
 
+  function handleChange() {
+    setNotes(notes === sample1 ? sample2 : sample1);
+  }
+
   return (
     <>
       <button onClick={startAudioContext} disabled={!!ac}>
@@ -27,6 +32,9 @@ function App() {
       <button onClick={start} disabled={!ac}>
         start
       </button>
+      <button onClick={handleChange} disabled={!ac}>
+        change
+      </button>
       <br />
       {ac && startTime ? (
         <ReactMidiVisualizer
@@ -34,7 +42,7 @@ function App() {
           height={500}
           width={800}
           startTime={startTime}
-          notes={data[0].midiJson.tracks[0].notes}
+          notes={notes}
           options={{
             fps: 60,
             keyboardHeight: 200,
