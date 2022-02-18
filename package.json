@@ -1,6 +1,6 @@
 {
   "name": "react-midi-visualizer",
-  "version": "2.0.2-2",
+  "version": "2.0.1",
   "description": "guitar-hero style visualizer that runs off of midi-json and an audio context",
   "main": "dist/react-midi-visualizer.js",
   "types": "dist/react-midi-visualizer.d.ts",
