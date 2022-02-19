@@ -36,7 +36,7 @@ function App() {
         change
       </button>
       <br />
-      {ac && startTime ? (
+      {ac ? (
         <ReactMidiVisualizer
           audioContext={ac}
           height={500}

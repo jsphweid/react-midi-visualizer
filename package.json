@@ -11,7 +11,7 @@
   },
   "scripts": {
     "clean": "rimraf dist/",
-    "dev": "parcel serve src/index.html --port 1234",
+    "start": "parcel serve src/index.html --port 1234",
     "build": "npm run clean && tsc",
     "precommit": "lint-staged",
     "prepublishOnly": "npm run build",
