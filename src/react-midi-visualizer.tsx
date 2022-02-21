@@ -4,7 +4,7 @@ import { Note, ReactMidiVisualizerOptionsType } from "./types";
 import Scene from "./scene";
 
 export interface ReactMidiVisualizerProps {
-  audioContext: AudioContext;
+  audioContext: AudioContext | null;
   width: number;
   height: number;
   startTime: number;
@@ -49,9 +49,11 @@ export default class ReactMidiVisualizer extends React.Component<
   private animationStep = (): void => {
     setTimeout(() => {
       window.requestAnimationFrame(this.animationStep.bind(this));
-      const timeSinceStart = this.props.startTime
-        ? this.props.audioContext.currentTime - this.props.startTime
-        : null;
+      const { audioContext, startTime } = this.props;
+      const timeSinceStart =
+        startTime && audioContext.currentTime
+          ? audioContext.currentTime - startTime
+          : null;
       this.scene.drawFrame(timeSinceStart);
     }, 1000 / this.props.options.fps);
   };

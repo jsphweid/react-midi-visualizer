@@ -9,15 +9,18 @@ function App() {
   const [startTime, setStartTime] = React.useState<number | null>(null);
   const [notes, setNotes] = React.useState(sample1);
 
-  function startAudioContext() {
-    const audioContext = new AudioContext();
-    setAc(audioContext);
+  async function startAudioContext() {
+    const ac = new AudioContext();
+    while (!ac.currentTime) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    setAc(ac);
+    return ac;
   }
 
-  function start() {
-    if (ac) {
-      setStartTime(ac.currentTime);
-    }
+  async function start() {
+    const ac = await startAudioContext();
+    setStartTime(ac.currentTime);
   }
 
   function handleChange() {
@@ -26,30 +29,21 @@ function App() {
 
   return (
     <>
-      <button onClick={startAudioContext} disabled={!!ac}>
-        boot audioContext
-      </button>
-      <button onClick={start} disabled={!ac}>
-        start
-      </button>
-      <button onClick={handleChange} disabled={!ac}>
-        change
-      </button>
+      <button onClick={start}>start</button>
+      <button onClick={handleChange}>change</button>
       <br />
-      {ac ? (
-        <ReactMidiVisualizer
-          audioContext={ac}
-          height={500}
-          width={800}
-          startTime={startTime}
-          notes={notes}
-          options={{
-            fps: 60,
-            keyboardHeight: 200,
-            pixelsPerSecondFall: 200
-          }}
-        />
-      ) : null}
+      <ReactMidiVisualizer
+        audioContext={ac}
+        height={500}
+        width={800}
+        startTime={startTime}
+        notes={notes}
+        options={{
+          fps: 60,
+          keyboardHeight: 200,
+          pixelsPerSecondFall: 200
+        }}
+      />
     </>
   );
 }
