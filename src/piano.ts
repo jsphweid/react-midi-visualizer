@@ -102,7 +102,8 @@ export default class Piano {
     width: number,
     height: number,
     border: string,
-    fill: string
+    fill: string,
+    lyric?: string | null
   ): void {
     this.ctx.beginPath();
     this.ctx.lineWidth = Piano.lineThickness;
@@ -111,6 +112,10 @@ export default class Piano {
     this.ctx.rect(x, y, width, height);
     this.ctx.stroke();
     this.ctx.fill();
+    if (lyric) {
+      this.ctx.font = "28px serif";
+      this.ctx.fillText(lyric, x + width + 5, y + height);
+    }
   }
 
   private getcurrentDepressedNotes(clockTime: number): number[] {
@@ -145,7 +150,8 @@ export default class Piano {
         this.keyWidth,
         eventHeight,
         black,
-        grey
+        grey,
+        note.lyric
       );
     });
   }

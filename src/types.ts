@@ -20,9 +20,9 @@ export interface NoteToDrawType {
 }
 
 export interface Note {
-  name: string;
-  midi: number;
   time: number;
-  velocity: number;
+  midi: number;
   duration: number;
+  velocity: number;
+  lyric?: string | null;
 }
