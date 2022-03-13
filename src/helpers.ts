@@ -9,8 +9,14 @@ export const determineLowestHighestC = (
     .fill(null)
     .map((_, i) => i)
     .filter(num => num % 12 === 0);
-  return {
-    lowestMidiNote: allCs.reverse().filter(num => num <= minMidi)[0],
-    highestMidiNote: allCs.reverse().filter(num => num >= maxMidi)[0]
-  };
+
+  let lowestMidiNote = allCs.reverse().filter(num => num <= minMidi)[0];
+  let highestMidiNote = allCs.reverse().filter(num => num >= maxMidi)[0];
+
+  // If there is only 1 note (and it's a C), then at least display an octave...
+  if (lowestMidiNote === highestMidiNote) {
+    lowestMidiNote -= 12;
+  }
+
+  return { lowestMidiNote, highestMidiNote };
 };
