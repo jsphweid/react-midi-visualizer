@@ -39,7 +39,7 @@ function App() {
         startTime={startTime}
         notes={notes}
         options={{
-          fps: 60,
+          fps: 120,
           keyboardHeight: 200,
           pixelsPerSecondFall: 200
         }}
