@@ -1,13 +1,15 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { sample1, sample2 } from "./sample";
+import { sample1, sample2, sample3 } from "./sample";
 import ReactMidiVisualizer from "./react-midi-visualizer";
+
+const samples = [sample1, sample2, sample3];
 
 function App() {
   const [ac, setAc] = React.useState<AudioContext | null>(null);
   const [startTime, setStartTime] = React.useState<number | null>(null);
-  const [notes, setNotes] = React.useState(sample1);
+  const [sampleIndex, setSampleIndex] = React.useState(0);
 
   async function startAudioContext() {
     const ac = new AudioContext();
@@ -24,7 +26,7 @@ function App() {
   }
 
   function handleChange() {
-    setNotes(notes === sample1 ? sample2 : sample1);
+    setSampleIndex(sampleIndex + 1);
   }
 
   return (
@@ -37,7 +39,7 @@ function App() {
         height={500}
         width={800}
         startTime={startTime}
-        notes={notes}
+        notes={samples[sampleIndex % samples.length]}
         options={{
           fps: 120,
           keyboardHeight: 200,

@@ -205,3 +205,12 @@ export const sample2 = [
     duration: 0.1875
   }
 ];
+
+export const sample3 = [
+  {
+    midi: 60,
+    time: 0.1875,
+    velocity: 0.7874015748031497,
+    duration: 0.1875
+  }
+];
